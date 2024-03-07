@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 양식</title>
+</head>
+
+<body>
+  <h3>로그인</h3>
+  <form action="" method="POST"> <!-- action 생략해도 됨 현재 url이 /login임 -->
+    <p><input type="text" name="email" placeholder="이메일"></p>
+    <p><input type="password" name="passwd" placeholder="비밀번호"></p>
+    <p>
+      <button>로그인</button>
+      <button id="homeBtn" type="button">뒤로가기</button>
+    </p>
+  </form>
+  <script>
+    const $homeBtn = document.getElementById('homeBtn');
+    $homeBtn.addEventListener('click', evt => location.href = '/');
+  </script>
+</body>
+
+</html>

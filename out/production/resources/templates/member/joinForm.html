@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입</title>
+  <style>
+    .errmsg {
+      font-style: italic;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>회원가입</h3>
+  <form id="frm" action="/members/join" method="POST">
+    <p>
+      <input type="text" id="email" name="email" placeholder="이메일">
+      <button type="button" id="dupchkBtn">중복체크</button>
+      <span class="errmsg" id="errmsg_email"></span>
+    </p>
+    <p><input type="password" id="passwd" name="passwd" placeholder="비밀번호"></p>
+    <p>
+      <input type="password" id="confirmPasswd" placeholder="비밀번호확인">
+      <span class="errmsg" id="errmsg_passwd"></span>
+    </p>
+    <p><input type="text" name="nickname" placeholder="닉네임"></p>
+    <p><button id="joinBtn">가입</button>
+      <button id="homeBtn" type="button">뒤로가기</button>
+    </p>
+  </form>
+
+  <script>
+    const $dupchkBtn = document.getElementById('dupchkBtn');
+    const $email = document.getElementById('email');
+    const $errmsg_email = document.getElementById('errmsg_email');
+    const $errmsg_passwd = document.getElementById('errmsg_passwd');
+    const $frm = document.getElementById('frm');
+    const $passwd = document.getElementById('passwd');
+    const $cPasswd = document.getElementById('confirmPasswd');
+    const $homeBtn = document.getElementById('homeBtn');
+    $homeBtn.addEventListener('click', evt => location.href = '/');
+
+    // 비밀번호 확인
+    $cPasswd.addEventListener('blur', () => {
+      if ($passwd.value !== $cPasswd.value) {
+        $errmsg_passwd.textContent = '비밀번호가 일치하지 않습니다.';
+        $cPasswd.dataset.pwdchk = 'nok';
+      } else {
+        $errmsg_passwd.textContent = '';
+        $cPasswd.dataset.pwdchk = 'ok';
+      }
+    });
+
+    // 이메일 중복체크 버튼 클릭 ----------------
+    $dupchkBtn.addEventListener('click', evt => {
+      dupchk(); // 중복체크 함수 실행
+    });
+
+    // 이메일 중복체크 함수 ----------------
+    async function dupchk() {
+      const email = {};
+      email['email'] = $email.value;
+      const url = `/api/members/dupchk`;
+      const options = {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',      // 서버로 부터 받기를 원하는 데이터타입
+          'Content-Type': 'application/json'  // 전송하는 데이터타입
+        },
+        body: JSON.stringify(email) // email 객체를 JSON 문자열로 변환
+      }
+      const response = await fetch(url, options);
+      const msgBody = await response.json();
+
+      if (msgBody.header.rtcd === '21') {
+        $errmsg_email.textContent = '존재하는 Email'
+        $email.focus();
+        // 사용자 정의 속성으로 이메일 중복체크 필수로 만들기
+        $email.dataset.dupchk = 'ok';
+      } else {
+        $errmsg_email.textContent = '사용가능한 Email'
+        $email.dataset.dupchk = 'nok'; // 사용자 정의 속성
+        $email.setAttribute('readonly', true); // 이메일 텍스트박스 읽기 전용으로 설정
+        $email.style.background = '#EFE23F';
+        $dupchkBtn.disabled = true;  // 중복체크버튼 비활성화
+      }
+    }
+
+    // form태그 submit시 ----------------
+    $frm.addEventListener('submit', evt => {
+      evt.preventDefault(); // submit 차단
+      // 이메일 중복 체크 확인
+      if (!$email.dataset.dupchk || $email.dataset.dupchk == 'ok') {
+        // 버튼을 안누르면 사용자정의 속성 안생김 or 이메일 중복이면 => return
+        $errmsg_email.textContent = '이메일 중복체크 필수'
+        return;
+      }
+      // 비밀번호 일치 확인
+      if ($cPasswd.dataset.pwdchk == 'ok') {
+        evt.currentTarget.submit(); // 비밀번호 확인되면 submit
+      }
+      return; // 비밀번호 확인 안되면 return
+    });
+
+  </script>
+</body>
+
+</html>

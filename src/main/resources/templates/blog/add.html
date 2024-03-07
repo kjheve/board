@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 작성</title>
+   <link rel="stylesheet" href="/css/blog/add.css">
+</head>
+
+<body>
+  <div class="main-wrap">
+    <h3 th:text="#{title.blog.add}">게시글 작성</h3>
+    <form action="/blog/add" method="POST" th:object="${addForm}">
+      <div class="writer-wrap">
+        <div>
+          <label for="title" th:text="#{label.blog.title}">제목</label>
+          <input id="title" name="title" type="text" placeholder="한,영,숫자(30자이내)" th:value="*{title}">
+          <span id="errTitle" class="err-msg">errTitle(Client)</span> <!--/* Clienct측 에러 */-->
+          <span class="err-msg" th:if="${s_err_title != ''}" th:class="'err-msg on'" th:text="${s_err_title}">errTitle(Server)</span> <!--/* Server측 에러 */-->
+        </div>
+        <div>
+          <span id="errWriter" class="err-msg">errWriter(Client)</span> <!--/* Clienct측 에러 */-->
+          <span class="err-msg" th:if="${s_err_writer != ''}" th:class="'err-msg on'" th:text="${s_err_writer}">errWriter(Server)</span> <!--/* Server측 에러 */-->
+          <label for="writer" th:text="#{label.blog.writer}">작성자</label>
+          <input id="writer" name="writer" type="text" placeholder="한,영,숫자,'_','-'(6자이내)" th:value="*{writer}">
+        </div>
+      </div>
+      <div>
+        <div>
+          <label for="bcontent" th:text="#{label.blog.bcontent}">내용</label>
+          <span id="errBcontent" class="err-msg">errBcontent(Client)</span> <!--/* Clienct측 에러 */-->
+          <span class="err-msg" th:if="${s_err_bcontent != ''}" th:class="'err-msg on'" th:text="${s_err_bcontent}">errBcontent(Server)</span> <!--/* Server측 에러 */-->
+        </div>
+        <textarea name="bcontent" id="bcontent" rows="10" placeholder="내용 입력"  th:value="*{bcontent}"></textarea>
+      </div>
+      <div class="btn-wrap">
+        <input type="button" value="목록" th:value="#{button.list}" onclick="location.href='/blog'">
+        <input type="submit" value="저장" th:value="#{button.save}">
+        <input type="reset" value="취소" th:value="#{button.cancel}">
+      </div>
+    </form>
+  </div>
+</body>
+
+<script>
+// 제목 유효성 검사------------------------------------------------ (Client)
+  title.addEventListener('focus', evt => {
+    evt.target.style.backgroundColor = 'lightyellow';
+  });
+  title.addEventListener('blur', evt => {
+    evt.target.style.backgroundColor = 'initial';
+    // 유효성 체크 (정규표현식)
+    const pattern = /^[a-zA-Z0-9ㄱ-ㅎ가-힣\s]{1,30}$/;
+    if (pattern.test(evt.target.value)) {
+      errTitle.classList.remove('on');
+      errTitle.textContent = '';
+    } else {
+      errTitle.classList.add('on');
+      errTitle.textContent = '특수문자 입력안됨(길이30자이내)(C)';
+      // 수정해야 빠져나오게 하기
+      evt.target.focus();
+      evt.target.select();
+    }
+  });
+  // 작성자 유효성 검사------------------------------------------------ (Client)
+  writer.addEventListener('focus', evt => {
+    evt.target.style.backgroundColor = 'lightyellow';
+  });
+  writer.addEventListener('blur', evt => {
+    evt.target.style.backgroundColor = 'initial';
+    // 유효성 체크 (정규표현식)
+    const pattern = /^[a-zA-Z0-9ㄱ-ㅎ가-힣_\-]{1,20}$/;
+    if (pattern.test(evt.target.value)) {
+      errWriter.classList.remove('on');
+      errWriter.textContent = '';
+    } else {
+      errWriter.classList.add('on');
+      errWriter.textContent = '특문 \'-\',\'_\'만 사용가능(길이20자이내)(C)';
+      // 수정해야 빠져나오게 하기
+      evt.target.focus();
+      evt.target.select();
+    }
+  });
+  
+  // 내용 유효성 검사------------------------------------------------ (Client)
+  bcontent.addEventListener('focus', evt => {
+    evt.target.style.backgroundColor = 'lightyellow';
+  });
+  bcontent.addEventListener('blur', evt => {
+    evt.target.style.backgroundColor = 'initial';
+    // 유효성 체크 (정규표현식)
+    const pattern = /^.{2,}$/;
+    if (pattern.test(evt.target.value)) {
+      errBcontent.classList.remove('on');
+      errBcontent.textContent = '';
+    } else {
+      errBcontent.classList.add('on');
+      errBcontent.textContent = '2글자 이상 입력(C)';
+      // 수정해야 빠져나오게 하기
+      evt.target.focus();
+      evt.target.select();
+    }
+  });
+
+</script>
+
+</html>

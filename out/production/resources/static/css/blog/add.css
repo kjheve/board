@@ -1,0 +1,57 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+.main-wrap {
+  width: 100%;
+  height: 100%;
+}
+.main-wrap h3 {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: lightblue;
+}
+#bcontent {
+  width: 100%;
+  height: 100%;
+}
+.btn-wrap {
+  display: flex;
+  justify-content: space-around;
+}
+.writer-wrap {
+  display: flex;
+  justify-content: space-between;
+}
+textarea {
+  padding: 5px;
+}
+/* 유효성 안내 메세지 */
+::placeholder {
+  color: red;
+  font-size: 0.8em;
+  font-style: italic;
+}
+/* 에러메세지 출력 */
+.err-msg {
+  display: none;
+  color: red;
+  font-size: 0.8em;
+  font-style: italic;
+}
+.err-msg.on {
+  display: inline-block;
+}
+.btn-wrap * {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: lightblue;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-wrap *:hover {
+  background-color: rgb(123, 200, 225);
+}

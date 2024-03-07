@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>뉴스검색</title>
+</head>
+
+<body>
+  <a href="/">메인으로가기</a>
+  <h3>뉴스검색</h3>
+  <div>
+    <form action="/pubdata/news/search" method="GET" onclick="return false;">
+      <label for="search">검색어</label>
+      <input id="search" type="text" name="keyword">
+      <button id="searchBtn" type="button">검색</button>
+    </form>
+  </div>
+  <div>
+    <p>검색결과</p>
+    <!-- 제목, 뉴스링크, 요약정보 -->
+    <table>
+      <thead>
+        <tr>
+          <th>제목</th>
+          <th>뉴스링크</th>
+          <th>요약정보</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- <tr>
+      <td>청주공장 노사, 저소득가정 교복 후원</td>
+      <td>https://www.naver.com</td>
+      <td>네이버</td>
+      <td>Feb 2024</td>
+    </tr> -->
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // 검색 버튼 클릭시
+    searchBtn.addEventListener('click', evt => {
+      const keyword = search.value;
+      const url = `/pubdata/news/search?keyword=${keyword}`;
+      const option = {
+        method: 'GET',
+      };
+      fetch(url, option)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('응답오류발생');
+          }
+          return res.json();   //응답메시지 바디를 읽어서 json포맷문자열=>js객체로 변환
+        })
+        .then(res => {
+          console.log(res.items)
+          res.items.forEach(item => console.log(item.title))
+          makeHtml(res); // 사용자 정의함수 makeHtml
+        })
+        .catch(error => console.error('오류 : ', error));
+    });
+
+    function makeHtml(res) {
+      res.items.forEach(article => console.log(article.title, article.link, article.pubDate, article.description));
+      const $tbody = document.querySelector('tbody');
+      let html = '';
+      res.items.forEach(article => {
+        html += `<tr>
+                  <td>${article.title}</td>
+                  <td><a href='${article.link}'>원문</a></td>
+                  <td>${article.description}</td>
+                  <td>${article.pubDate}</td>
+                 </tr>`;
+      });
+      $tbody.innerHTML = html;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 수정</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-wrap {
+      width: 100%;
+      height: 100%;
+    }
+
+    .main-wrap h3 {
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      background-color: lightblue;
+    }
+
+    #bcontent {
+      width: 100%;
+      height: 100%;
+    }
+
+    .btn-wrap {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .writer-wrap {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    textarea {
+      padding: 5px;
+    }
+
+    /* 유효성 안내 메세지 */
+    ::placeholder {
+      color: red;
+      font-size: 0.8em;
+      font-style: italic;
+    }
+    /* 에러메세지 출력 */
+    .err-msg {
+      display: none;
+      color: red;
+      font-size: 0.8em;
+      font-style: italic;
+    }
+    .err-msg.on {
+      display: inline-block;
+    }
+    .btn-wrap * {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: lightblue;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn-wrap *:hover {
+      background-color: rgb(123, 200, 225);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-wrap">
+    <h3 th:text="#{title.blog.update}">게시글 수정</h3>
+    <form action="#" method="POST" th:object="${blog}">
+      <div class="writer-wrap">
+        <div><label for="blogId" th:text="#{label.blog.blogId}">글번호 </label><strong id="blogId" th:text="*{blogId}"></strong></div>
+        <div>
+          <label for="title" th:text="#{label.blog.title}">제목</label>
+          <input id="title" name="title" type="text" th:value="*{title}">
+          <span id="errTitle" class="err-msg">errTitle(Client)</span> <!--/* Clienct측 에러 */-->
+          <span class="err-msg" th:if="${s_err_title != ''}" th:class="'err-msg on'" th:text="${s_err_title}">errTitle(Server)</span>
+        </div>
+        <div><label for="writer" th:text="#{label.blog.writer}">작성자 </label><strong id="writer" name="writer" th:text="*{writer}"></strong></div>
+      </div>
+      <div>
+        <div>
+          <label for="bcontent" th:text="#{label.blog.bcontent}">내용</label>
+          <span id="errBcontent" class="err-msg">errBcontent(Client)</span> <!--/* Clienct측 에러 */-->
+          <span class="err-msg" th:if="${s_err_bcontent != ''}" th:class="'err-msg on'" th:text="${s_err_bcontent}">errTitle(Server)</span>
+        </div>
+        <textarea name="bcontent" id="bcontent" rows="10" th:text="*{bcontent}"></textarea>
+      </div>
+      <div class="btn-wrap">
+        <input id="listBtn" type="button" value="목록" th:value="#{button.list}">
+        <input id="saveBtn" type="submit" value="저장" th:value="#{button.save}">
+        <input id="resetBtn" type="reset" value="취소" th:value="#{button.cancel}">
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // 목록 클릭 이벤트
+    document.getElementById('listBtn').addEventListener('click', evt => {
+      location.href = '/blog';
+    });
+
+    // 제목 유효성 검사------------------------------------------------ (Client)
+    title.addEventListener('focus', evt => {
+      evt.target.style.backgroundColor = 'lightyellow';
+    });
+    title.addEventListener('blur', evt => {
+      evt.target.style.backgroundColor = 'initial';
+      // 유효성 체크 (정규표현식)
+      const pattern = /^[a-zA-Z0-9ㄱ-ㅎ가-힣\s]{1,30}$/;
+      if (pattern.test(evt.target.value)) {
+        errTitle.classList.remove('on');
+        errTitle.textContent = '';
+      } else {
+        errTitle.classList.add('on');
+        errTitle.textContent = '특수문자 입력안됨(길이30자이내)(C)';
+        // 수정해야 빠져나오게 하기
+        // evt.target.focus();
+        // evt.target.select();
+      }
+    });
+
+    // 내용 유효성 검사------------------------------------------------ (Client)
+    bcontent.addEventListener('focus', evt => {
+    evt.target.style.backgroundColor = 'lightyellow';
+    });
+    bcontent.addEventListener('blur', evt => {
+      evt.target.style.backgroundColor = 'initial';
+      // 유효성 체크 (정규표현식)
+      const pattern = /^.{2,}$/;
+      if (pattern.test(evt.target.value)) {
+        errBcontent.classList.remove('on');
+        errBcontent.textContent = '';
+      } else {
+        errBcontent.classList.add('on');
+        errBcontent.textContent = '2글자 이상 입력(C)';
+        // 수정해야 빠져나오게 하기
+        // evt.target.focus();
+        // evt.target.select();
+      }
+    });
+  </script>
+</body>
+
+</html>

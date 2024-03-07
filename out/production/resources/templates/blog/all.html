@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 글목록</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-wrap h3 {
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      background-color: lightblue;
+    }
+
+    table {
+      width: 100%;
+      height: 100%;
+    }
+
+    thead {
+      background-color: lightgoldenrodyellow;
+    }
+
+    tr {
+      display: flex;
+    }
+
+    tr .ck {
+      flex: 0.1;
+    }
+
+    tr .t {
+      flex: 1;
+    }
+
+    tr td {
+      flex: 0.3;
+      text-align: center;
+      font-weight: bold;
+      border: 0.5px solid black;
+    }
+
+    .btn-wrap {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .row:hover {
+      background-color: rgb(123, 200, 225)
+    }
+
+    td {
+      padding: 10px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: lightblue;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: rgb(123, 200, 225);
+    }
+  </style>
+</head>
+
+<body>
+  <form id="frm" action="/blog/del" method="POST">
+    <div class="main-wrap">
+      <h3 th:text="#{title.blog.list}">게시글 목록</h3>
+      <table>
+        <thead>
+          <tr>
+            <td class="ck"><input type="checkbox" id="selectAll"></td>
+            <td th:text="#{label.blog.blogId}">글번호</td>
+            <td th:text="#{label.blog.title}" class="t">제목</td>
+            <td th:text="#{label.blog.writer}">작성자</td>
+            <td th:text="#{label.blog.cdate}">작성일</td>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr class="row" th:each="blog:${list}" th:data-blog-id="${blog.blogId}">
+            <td class="ck"><input type="checkbox" name="bids" th:value="${blog.blogId}"></td>
+            <td th:text="${blog.blogId}"></td>
+            <td class="t" th:text="${blog.title}"></td>
+            <td th:text="${blog.writer}"></td>
+            <td th:text="${#temporals.format(blog.cdate, 'yyyy년M월dd일')}"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn-wrap">
+        <button id="delBtn" type="submit" th:value="#{button.delete}">삭제</button>
+        <button id="addBtn" type="button" th:value="#{button.add}">작성</button>
+        <button id="homeBtn" type="button">메인</button>
+      </div>
+    </div>
+  </form>
+
+  <script>
+    // tbody(.rows) 부분 클릭시 detail(디테일)화면으로 가게하기 -----------------------------------
+    const $rows = document.getElementById('rows');
+    $rows.addEventListener('click', evt => {
+      // 1) check 박스 제외
+      if (evt.target.getAttribute('type') == 'checkbox' && evt.target.tagName === 'INPUT') { return; }
+      // 2) check 박스가 속한 td요소 제외
+      if (evt.target.tagName == 'TD' && evt.target.classList.contains('ck')) { return; }
+
+      const $row = evt.target.closest('.row');
+      const blogId = $row.dataset.blogId;
+      location.href = `/blog/${blogId}/detail`; // GET, http://localhost:9080/blog/게시물번호/add
+    });
+
+    // 삭제 버튼 submit 이벤트 -----------------------------------
+    const $frm = document.getElementById('frm');
+    $frm.addEventListener('submit', evt => {
+      evt.preventDefault(); // submit 중지
+      if(!confirm('삭제하시겠습니까?')) { return; }
+      evt.target.submit(); // submit 재실행
+    });
+
+    // 작성 버튼 클릭시 게시물 작성 화면으로 가기 -----------------------------------
+    const $addBtn = document.getElementById('addBtn');
+    $addBtn.addEventListener('click', evt => {
+      location.href = '/blog/add'; // GET, http://localhost:9080/blog/add
+    });
+
+    // thead의 체크박스 선택시 전체선택
+    const $selectAll = document.getElementById('selectAll');
+    $selectAll.addEventListener('change', evt => {
+      // nodelist를 배열로 변경
+      const $arr = Array.from(document.querySelectorAll('#rows .row input[type=checkbox]'));
+      const isAllchecked = $arr.every(ele => ele.checked == true);
+      if(isAllchecked) {
+        $arr.forEach(ele => ele.checked = false);
+      } else {
+        $arr.forEach(ele => ele.checked = true);
+      }
+    });
+
+    // 메인으로 가기
+    const $homeBtn = document.getElementById('homeBtn');
+    $homeBtn.addEventListener('click', evt => location.href = '/');
+    
+  </script>
+
+</body>
+
+</html>
