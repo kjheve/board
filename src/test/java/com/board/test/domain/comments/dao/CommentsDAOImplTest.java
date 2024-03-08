@@ -47,6 +47,15 @@ class CommentsDAOImplTest {
     // 그 게시물의 댓글 갯수
     log.info("size = {}", list.size());
   }
+  @Test
+  @DisplayName("상품목록(페이징)")
+  void findAllMultiple() {
+    List<Comments> list = commentsDAO.findAll(1L, 1L, 10L);
+    for (Comments comments : list) {
+      log.info("comments={}", comments);
+    }
+    log.info("size={}", list.size());
+  }
 
   @Test
   @Transactional

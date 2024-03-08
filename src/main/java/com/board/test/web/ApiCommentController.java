@@ -48,21 +48,45 @@ public class ApiCommentController {
   }
 
   // ☆댓글 목록 -----------------------------------------------------
+//  @GetMapping
+//  public ApiResponse<?> list(@RequestParam("blogId") Long blogId) {
+//    List<Comments> list = commentsSVC.findAll(blogId); // 해당 게시물 댓글 목록 찾기
+//
+//    ApiResponse<List<Comments>> res = null;
+//    if (list.size() > 0) { // 해당 게시물의 댓글이 1개라도 존재시
+//      res = ApiResponse.createApiResponse(ResCode.OK.getCode(), ResCode.OK.name(), list);
+//      int totalCnt = commentsSVC.totalCnt(blogId);
+//      res.setTotalCnt(totalCnt); // 총 댓글 갯수 응답메세지로
+//    } else { // 해당 게시물의 댓글이 0개면
+//      res = ApiResponse.createApiResponseDetail(ResCode.FAIL.getCode(), ResCode.FAIL.name(), "댓글이 없는 게시물", list);
+//    }
+//
+//    return res;
+//  }
+
+  // ☆댓글 목록 + 페이징 -----------------------------------------------------
   @GetMapping
-  public ApiResponse<?> list(@RequestParam("blogId") Long blogId) {
-    List<Comments> list = commentsSVC.findAll(blogId); // 해당 게시물 댓글 목록 찾기
+  public ApiResponse<?> listMultiple(@RequestParam("blogId") Long blogId,
+                                     @RequestParam("reqPage") Long reqPage,
+                                     @RequestParam("recCnt") Long recCnt) {
+    List<Comments> list = commentsSVC.findAll(blogId, reqPage, recCnt); // 해당 게시물 댓글 목록 찾기
 
     ApiResponse<List<Comments>> res = null;
     if (list.size() > 0) { // 해당 게시물의 댓글이 1개라도 존재시
       res = ApiResponse.createApiResponse(ResCode.OK.getCode(), ResCode.OK.name(), list);
       int totalCnt = commentsSVC.totalCnt(blogId);
       res.setTotalCnt(totalCnt); // 총 댓글 갯수 응답메세지로
+
+      res.setReqPage(reqPage.intValue());
+      res.setRecCnt(recCnt.intValue());
+
     } else { // 해당 게시물의 댓글이 0개면
       res = ApiResponse.createApiResponseDetail(ResCode.FAIL.getCode(), ResCode.FAIL.name(), "댓글이 없는 게시물", list);
     }
 
     return res;
   }
+
 
   // ☆댓글 수정 -----------------------------------------------------
   @PatchMapping("/{commentId}")

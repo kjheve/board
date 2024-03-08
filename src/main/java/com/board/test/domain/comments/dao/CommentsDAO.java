@@ -13,6 +13,9 @@ public interface CommentsDAO {
   // ★ 2) 해당 게시물 댓글 목록
   List<Comments> findAll(Long blogId);
 
+  // ★ 2-1) 해당 게시물 댓글 목록 페이징
+  List<Comments> findAll(Long blogId, Long reqPage, Long recCnt);
+
   // ★ 3) 댓글 삭제
   int deleteById(Long commentsId);
 

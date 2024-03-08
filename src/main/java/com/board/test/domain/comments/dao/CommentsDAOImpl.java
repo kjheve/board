@@ -1,9 +1,7 @@
 package com.board.test.domain.comments.dao;
 
 import com.board.test.domain.entity.Comments;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -21,7 +19,7 @@ import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
-public class CommentsDAOImpl implements CommentsDAO{
+public class CommentsDAOImpl implements CommentsDAO {
 
   private final NamedParameterJdbcTemplate template;
 
@@ -60,6 +58,32 @@ public class CommentsDAOImpl implements CommentsDAO{
       return List.of();
     }
   }
+
+  // ★ 2-1) 해당(blogId) 게시물 댓글 목록
+  @Override
+  public List<Comments> findAll(Long blogId, Long reqPage, Long recCnt) {
+    StringBuffer sql = new StringBuffer();
+    sql.append("select c.comments_id, c.blog_id, c.ccontent, c.writer, c.cdate, c.udate ");
+    sql.append("from comments c join blog b on c.blog_id = b.blog_id ");
+    sql.append("where c.blog_id = :blogId ");
+    sql.append("order by comments_id desc ");
+    sql.append("offset (:reqPage-1) * :recCnt rows ");
+    sql.append("fetch first :recCnt rows only ");
+
+    try {
+      // (:blogId) 파라미터와 값을 매핑하는 Map 생성
+      Map<String, Long> map = Map.of("blogId", blogId,
+              "reqPage", reqPage,
+              "recCnt", recCnt);
+      List<Comments> list = template.query(sql.toString(), map,
+              BeanPropertyRowMapper.newInstance(Comments.class));
+      return list;
+    } catch (EmptyResultDataAccessException e) {
+      // 조회 결과가 없는 경우
+      return List.of();
+    }
+  }
+
 
   // ★ 3) 댓글 삭제
   @Override

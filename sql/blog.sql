@@ -13,7 +13,7 @@ create table blog(
     blog_id     number(10),  -- 게시글id
     title       varchar(90), -- 제목
     bcontent    clob,        -- 내용
-    writer      varchar(15), -- 작성자
+    writer      varchar(60), -- 작성자
     cdate       timestamp,   -- 작성날짜
     udate       timestamp    -- 수정날짜
 );
@@ -25,7 +25,7 @@ create table comments(
   comments_id     number(10), -- 댓글id
   blog_id         number(10), -- 게시글id
   ccontent        clob,        -- 내용
-  writer          varchar(15), -- 작성자
+  writer          varchar(60), -- 작성자
   cdate           timestamp,   -- 작성날짜
   udate           timestamp    -- 수정날짜
 );
@@ -91,6 +91,14 @@ select c.comments_id, c.blog_id, c.ccontent, c.writer, c.cdate, c.udate
   from comments c join blog b on c.blog_id = b.blog_id
   where c.blog_id = 1
   order by comments_id desc;
+
+-- 목록 - 페이징
+select c.comments_id, c.blog_id, c.ccontent, c.writer, c.cdate, c.udate
+  from comments c join blog b on c.blog_id = b.blog_id
+  where c.blog_id = 1
+  order by comments_id desc
+  offset (:recCnt-1) * :reqPage rows
+  fetch first :recCnt rows only;
 
 select count(*) from comments;
 select * from comments;

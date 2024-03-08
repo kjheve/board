@@ -17,16 +17,16 @@
   <h3>회원가입</h3>
   <form id="frm" action="/members/join" method="POST">
     <p>
-      <input type="text" id="email" name="email" placeholder="이메일">
+      <input type="text" id="email" name="email" placeholder="이메일" required>
       <button type="button" id="dupchkBtn">중복체크</button>
       <span class="errmsg" id="errmsg_email"></span>
     </p>
-    <p><input type="password" id="passwd" name="passwd" placeholder="비밀번호"></p>
+    <p><input type="password" id="passwd" name="passwd" placeholder="비밀번호" required></p>
     <p>
       <input type="password" id="confirmPasswd" placeholder="비밀번호확인">
       <span class="errmsg" id="errmsg_passwd"></span>
     </p>
-    <p><input type="text" name="nickname" placeholder="닉네임"></p>
+    <p><input type="text" name="nickname" placeholder="닉네임" required></p>
     <p><button id="joinBtn">가입</button>
       <button id="homeBtn" type="button">뒤로가기</button>
     </p>

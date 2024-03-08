@@ -23,6 +23,11 @@ public class CommentsSVCImpl implements CommentsSVC{
   public List<Comments> findAll(Long blogId) {
     return commentsDAO.findAll(blogId);
   }
+  // 댓글 목록 + 페이징
+  @Override
+  public List<Comments> findAll(Long blogId, Long reqPage, Long recCnt) {
+    return commentsDAO.findAll(blogId, reqPage, recCnt);
+  }
 
   // 댓글 삭제
   @Override
