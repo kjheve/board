@@ -276,8 +276,8 @@
   <script type="module" th:inline="javascript">
     // ★☆★☆★☆★☆★----------스크립트 시작-----------★☆★☆★☆★☆★
     import { Pagination } from '/js/paging.js'
-    //페이징 객체 생성
-    const pagination = new Pagination(10, 10); // 한페이지에 보여줄 레코드건수,한페이지에 보여줄 페이지수
+    // CSR 페이징 객체 생성
+    const pagination = new Pagination(5, 10); // 한페이지에 보여줄 레코드건수,한페이지에 보여줄 페이지수
 
     // 세션 변수
     const memberNickname = [[${ session.loginMember.nickname }]];
@@ -402,12 +402,12 @@
           }).join('');
 
           // console.log(html); // map으로 받아온거 찍어보기
-
           $commentlist.innerHTML = html; // 댓글 목록에 저장
 
           // 페이징 ----------------- 총건수는 초기 1회만
           pagination.setTotalRecords(result.totalCnt);
           pagination.displayPagination(list);
+
         } else {
           new Error('목록 가져오기 실패!');
         }

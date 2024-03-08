@@ -68,6 +68,26 @@ public class BlogDAOImpl implements BlogDAO {
     List<Blog> list = template.query(sql.toString(), BeanPropertyRowMapper.newInstance(Blog.class));
     return list;
   }
+  // ★3-1) 전체 조회(페이징)----------------------------------------------
+  @Override
+  public List<Blog> findAll(Long reqPage, Long recCnt) {
+    StringBuffer sql = new StringBuffer();
+    sql.append("select blog_id, title, bcontent, writer, cdate, udate ");
+    sql.append("from blog ");
+    sql.append("order by blog_id desc ");
+    sql.append("offset (:reqPage-1) * :recCnt rows ");
+    sql.append("fetch first :recCnt rows only ");
+
+    try {
+      Map<String, Long> map = Map.of("reqPage", reqPage, "recCnt", recCnt);
+      List<Blog> list = template.query(sql.toString(), map,
+              BeanPropertyRowMapper.newInstance(Blog.class));
+      return list;
+    } catch (EmptyResultDataAccessException e) {
+      // 조회 결과가 없는 경우
+      return List.of();
+    }
+  }
 
   // ★4) 1건 삭제----------------------------------------------
   @Override

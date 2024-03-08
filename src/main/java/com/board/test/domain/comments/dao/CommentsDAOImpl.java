@@ -59,7 +59,7 @@ public class CommentsDAOImpl implements CommentsDAO {
     }
   }
 
-  // ★ 2-1) 해당(blogId) 게시물 댓글 목록
+  // ★ 2-1) 해당(blogId) 게시물 댓글 목록 -- 페이징!!!!!!!!!!!!
   @Override
   public List<Comments> findAll(Long blogId, Long reqPage, Long recCnt) {
     StringBuffer sql = new StringBuffer();

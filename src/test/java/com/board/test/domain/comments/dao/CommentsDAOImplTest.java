@@ -48,7 +48,7 @@ class CommentsDAOImplTest {
     log.info("size = {}", list.size());
   }
   @Test
-  @DisplayName("상품목록(페이징)")
+  @DisplayName("댓글목록(페이징)")
   void findAllMultiple() {
     List<Comments> list = commentsDAO.findAll(1L, 1L, 10L);
     for (Comments comments : list) {

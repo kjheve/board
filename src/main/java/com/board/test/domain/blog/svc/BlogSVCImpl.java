@@ -32,6 +32,11 @@ public class BlogSVCImpl implements BlogSVC{
   public List<Blog> findAll() {
     return blogDAO.findAll();
   }
+  // 3-1) 전체 조회 - 페이징
+  @Override
+  public List<Blog> findAll(Long reqPage, Long recCnt) {
+    return blogDAO.findAll(reqPage, recCnt);
+  }
 
   // 4) 1건 삭제
   @Override

@@ -22,12 +22,30 @@ public class BlogController {
   }
 
   // ★ 3) 게시판 목록
+//  @GetMapping // GET, http://localhost:9080/blog
+//  public String findAll(Model model) {
+//    List<Blog> list = blogSVC.findAll();
+//    model.addAttribute("list", list);
+//    return "blog/all";
+//  }
+  // ★ 3-1) 게시판 목록 (페이징) ★★★★★★★
   @GetMapping // GET, http://localhost:9080/blog
-  public String findAll(Model model) {
-    List<Blog> list = blogSVC.findAll();
+  public String findAll(Model model,
+                        @RequestParam(value = "reqPage", defaultValue = "1") Long reqPage, // 요청 페이지
+                        @RequestParam(value = "recCnt", defaultValue = "10") Long recCnt,  // 레코드 수
+                        @RequestParam(value = "cpgs", defaultValue = "1") Long cpgs, // 페이지 그룹 시작번호
+                        @RequestParam(value = "cp", defaultValue = "1") Long cp) {
+    List<Blog> list = blogSVC.findAll(reqPage, recCnt);
+    int totalCnt = blogSVC.totalCnt(); // 전체건수 정보도 저장
+    // 뷰에서도 이용할 수 있게 model에 등록
     model.addAttribute("list", list);
+    model.addAttribute("totalCnt", totalCnt);
+    model.addAttribute("cpgs", cpgs);
+    model.addAttribute("cp", cp);
     return "blog/all";
   }
+
+
 
   // ★ 1) 게시판 등록 양식
   @GetMapping("/add") // Get, http://localhost:9080/blog/add

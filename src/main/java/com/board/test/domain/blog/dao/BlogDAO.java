@@ -14,6 +14,8 @@ public interface BlogDAO {
 
   // ★ 3) 전체 조회(목록)
   List<Blog> findAll();
+  // ★ 3-1) 전체 조회(목록) - 페이징
+  List<Blog> findAll(Long reqPage, Long recCnt);
 
   // ★ 4) 1건 삭제
   int deleteById(Long blogId);

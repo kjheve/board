@@ -38,9 +38,9 @@ class BlogDAOImplTest {
   void saveMutiple() {
     for (int i = 1; i < 153; i++) {
       Blog blog = new Blog();
-      blog.setTitle("Spring 공부하실분"+i);
-      blog.setBcontent("공부하실분 카톡하세요"+(i*5));
-      blog.setWriter("김프링"+i);
+      blog.setTitle("Spring 공부하실분" + i);
+      blog.setBcontent("공부하실분 카톡하세요" + (i * 5));
+      blog.setWriter("김프링" + i);
       blogDAO.save(blog);
     }
   }
@@ -58,6 +58,16 @@ class BlogDAOImplTest {
   @DisplayName("게시글 전체 조회")
   void findAll() {
     List<Blog> list = blogDAO.findAll();
+    for (Blog blog : list) {
+      log.info("blog={}", blog);
+    }
+    log.info("size={}", list.size());
+  }
+
+  @Test
+  @DisplayName("게시글 페이징 전체 조회")
+  void findAllMultiple() {
+    List<Blog> list = blogDAO.findAll(1L, 10L);
     for (Blog blog : list) {
       log.info("blog={}", blog);
     }
@@ -99,7 +109,7 @@ class BlogDAOImplTest {
     int updateRowCnt = blogDAO.updateById(blogId, blog);
     log.info("updateRowCnt={}", updateRowCnt);
 
-    if(updateRowCnt == 0) {
+    if (updateRowCnt == 0) {
       Assertions.fail("수정 내역 없음");
     }
     Optional<Blog> optionalProduct = blogDAO.findByID(blogId);
