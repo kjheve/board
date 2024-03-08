@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ReqUpdate {
   private String ccontent; // 댓글 내용
-  private String writer; // 작성자
+//  private String writer; // 작성자
 }

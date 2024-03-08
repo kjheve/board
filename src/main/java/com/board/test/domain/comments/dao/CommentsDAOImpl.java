@@ -81,13 +81,11 @@ public class CommentsDAOImpl implements CommentsDAO{
     StringBuffer sql = new StringBuffer();
     sql.append(" update comments ");
     sql.append(" set ccontent = :ccontent, ");
-    sql.append("     writer = :writer, ");
     sql.append("          udate = default ");
     sql.append(" where comments_id = :commentsId ");
 
     SqlParameterSource param = new MapSqlParameterSource()
             .addValue("ccontent", comments.getCcontent())
-            .addValue("writer", comments.getWriter())
             .addValue("commentsId", commentsId);
     int updateRowCnt = template.update(sql.toString(), param);
 

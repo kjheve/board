@@ -8,5 +8,4 @@ import lombok.Data;
 public class ResUpdate {
   private Long commentsId;
   private String ccontent;
-  private String writer;
 }

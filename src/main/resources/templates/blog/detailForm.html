@@ -88,6 +88,7 @@
     .item {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 10px;
       border-bottom: 1px solid #ccc;
     }
@@ -111,9 +112,13 @@
     }
 
     #commentErrMsg {
-      color : red;
+      color: red;
       font-style: italic;
     }
+
+    /* .commentsId {
+      display: none;
+    } */
   </style>
 </head>
 
@@ -154,31 +159,34 @@
     </div>
     <!-- 등록시 에러 -->
     <div id="commentErrMsg"></div>
-    <!-- 댓글 목록 -->
+    <!-- 댓글 목록 --------------------------------------- -->
     <ul class="commentlist">
-      <!-- <li class="item item1">내용1 <strong>user01@naver.com</strong>
-        <div><button>수정</button><button>삭제</button></div>
-      </li>
-      <li class="item item1">내용2 <strong>user02@naver.com</strong>
-        <div><button>수정</button><button>삭제</button></div>
-      </li>
-      <li class="item item1">내용3 <strong>user03@naver.com</strong>
+      <!-- 샘플 데이터 -->
+      <!-- <li class="item read">
+        <div><span>작성자</span></div>
+        <div><span>내용</span></div>
         <div><button>수정</button><button>삭제</button></div>
       </li> -->
     </ul>
   </div>
 
-  <!-- 댓글 읽기 모드 남이 쓴거 보이기-->
+  <!-- 댓글 읽기 모드(남글)-->
   <template id="readMode1">
     <li class="item read">
-      <div><span class="reply-writer">작성자</span><span class="reply-email">email</span></div>
+      <input class="commentsId" type="hidden"></input>
+      <div>
+        <span class="reply-writer">작성자</span>
+        <!-- <span class="reply-email">email</span> -->
+      </div>
       <div><span class="reply">내용</span></div>
+      <div></div>
     </li>
   </template>
-  <!-- 댓글 읽기 모드 내가 쓴거 보이기-->
+  <!-- 댓글 읽기 모드(내 글)-->
   <template id="readMode2">
     <li class="item read">
-      <div><span class="reply-writer">작성자</span><span class="reply-email">email</span></div>
+      <input class="commentsId" type="hidden"></input>
+      <div><span class="reply-writer">작성자</span></div>
       <div><span class="reply">내용</span></div>
       <div><button class="modifyBtn">수정</button><button class="delBtn">삭제</button></div>
     </li>
@@ -186,7 +194,7 @@
   <!-- 댓글 수정 모드 -->
   <template id="editMode">
     <li class="item edit">
-      <input type="text">
+      <input class="text" type="text">
       <div><button class="saveBtn">저장</button><button class="cancelBtn">취소</button></div>
     </li>
   </template>
@@ -204,6 +212,7 @@
     // ★☆★☆★☆★☆★----------스크립트 시작-----------★☆★☆★☆★☆★
     // 세션 변수
     const memberNickname = [[${ session.loginMember.nickname }]];
+    console.log(memberNickname);
     // ★☆★☆★☆★☆★★☆★☆★☆★☆★★☆★☆★☆★☆★★☆★☆★☆★☆
 
     // 게시판 변수
@@ -244,13 +253,14 @@
     const $commentlist = document.querySelector('.commentlist'); // 댓글 목록
 
     const bId = document.getElementById('blogId').value; // 현재 게시글 번호 값
-    const writerValue = document.getElementById('writer').value; // 작성자 값
+    const commentsId = document.querySelector('input.commentsId'); // 댓글ID
 
     // const loginId = '테스트'; // 임시변수
 
 
     list(bId); // 댓글 목록 불러오기
     // 댓글 목록☆☆☆☆☆☆☆☆☆☆☆☆☆☆
+    // ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
     async function list(bId) {
       const url = `http://localhost:9080/api/comments?blogId=${bId}`;
       const option = {
@@ -268,11 +278,13 @@
 
           const html = result.body.map(comment => {
             let $readModeLi = '';
-            if (comment.writer == writerValue) { // 작성자 = 로그인ID 비교
+            if (comment.writer == memberNickname) { // 작성자 = 로그인ID 비교
               $readModeLi = readMode2.content.cloneNode(true).querySelector('li');
             } else {
               $readModeLi = readMode1.content.cloneNode(true).querySelector('li');
             }
+            $readModeLi.querySelector('input.commentsId').value = comment.commentsId;
+            $readModeLi.querySelector('.reply-writer').textContent = comment.writer;
             $readModeLi.querySelector('.reply').textContent = comment.ccontent;
             return $readModeLi.outerHTML;
           }).join('');
@@ -299,23 +311,23 @@
       }
       // 2) 등록처리
       const commentContent = $comment.value;
-      const comment = {
+      const commentObj = {
         "blogId": bId,
         "ccontent": commentContent,
         "writer": memberNickname
       }
-      add(comment);
-      $comment.value ='';
+      add(commentObj);
+      $comment.value = '';
     });
-    // 댓글 등록 함수
-    async function add(comment) {
+    // 댓글 등록 함수 ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
+    async function add(commentObj) {
       const url = `http://localhost:9080/api/comments`;
-      const payload = comment
+      const payload = commentObj
       const option = {
         method: 'POST',
         headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json'
+          'accept': 'application/json',      // json포맷 받기
+          'Content-Type': 'application/json' // json포맷 전달
         },
         body: JSON.stringify(payload),   // ★js 객체 => json 포맷 문자열
       };
@@ -329,13 +341,157 @@
         } else {
           new Error('등록 실패!');
         }
-        // console.log(result);
       } catch (err) {
         console.err(err.message);
       }
-
     }
 
+    // 댓글 버튼 이벤트 수정, 삭제, 저장, 취소 ☆☆☆☆☆☆☆☆☆☆☆☆☆☆
+    // commentlist 버튼 클릭 이벤트 걸기
+    $commentlist.addEventListener('click', evt => {
+      if (evt.target.tagName !== 'BUTTON') { return; } // 버튼이 아닌값들은 return 함
+      // 클릭된 버튼의 부모 요소인 li 요소에서 commentsId 값 찾기
+      // window에 넣으면 전역 객체로 바뀜
+      window.commentsId = evt.target.closest('.item').querySelector('input.commentsId');
+      // let cId = null;
+      // if (window.commentsId) {
+      //   cId = window.commentsId.value;
+      // }
+      switch (evt.target.classList[0]) { // 클래스의 값을 switch문으로
+        case "modifyBtn": // 수정 버튼
+          modify(evt);
+          break;
+        case "delBtn": // 삭제 버튼
+          // console.log(evt.target);
+          // if (!confirm('댓글을 삭제 하시겠습니까?')) {
+          //   return; // 아니오(!false) 입력시 true로 되어 return
+          // }
+          // del(commentsId.value); // 댓글 삭제 함수 실행
+          $delModal.showModal(); // 모달창 띄우기
+          break;
+        case "saveBtn": // 저장 버튼
+          save(evt);
+          break;
+        case "cancelBtn": // 취소 버튼
+          cancel(evt);
+          break;
+      }
+    });
+
+    // 댓글 삭제 함수 ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
+    async function del(commentsId) { // 삭제
+      const url = `http://localhost:9080/api/comments/${commentsId}`;
+      const option = {
+        method: 'DELETE',
+        headers: {
+          'accept': 'application/json',
+        },
+      };
+      try {
+        const res = await fetch(url, option);
+        if (!res.ok) return new Error('서버응답오류');
+        const result = await res.json(); // 응답 메세지 바디를 읽어 json포맷 문자열 => js객체
+        if (result.header.rtcd == '00') {
+          console.log(result.body); // 응답 바디 확인
+          list(bId); // 삭제 후 목록 불러오기
+        } else {
+          new Error('삭제 실패!');
+        }
+        console.log(result);
+      } catch (err) {
+        console.err(err.message);
+      }
+    }
+
+
+    // 댓글 수정 함수 ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
+    function modify(evt) {
+      const $originalLi = evt.target.closest('li');
+      const cidValue = $originalLi.querySelector('input.commentsId').value;
+      const originalText = $originalLi.querySelector('.reply').textContent;
+
+      const $editModeLi = $editMode.content.cloneNode(true).querySelector('li');
+      $editModeLi.querySelector('.text').value = originalText; // 현재값 수정모드 input에 넣기
+
+      // 사용자 정의 속성을 이용하여 현재 cid값 저장
+      $editModeLi.querySelector('.text').dataset.cidValue = cidValue;
+
+      // 취소 시 이전값 사용자정의속성으로 저장
+      $editModeLi.querySelector('.text').dataset.oldText = originalText;
+
+      // 현재Li 수정Li로 변경
+      $originalLi.replaceWith($editModeLi);
+    }
+
+    // 댓글 저장 함수 ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
+    async function save(evt) {
+      const $currentLi = evt.target.closest('li'); // 수정모드 된 Li
+      // 사용자 정의 속성으로 cid값 저장했던거 변수 cid로 저장
+      const cid = $currentLi.querySelector('.text').dataset.cidValue;
+      const editText = $currentLi.querySelector('.text').value; // 수정된 내용
+      const url = `http://localhost:9080/api/comments/${cid}`;
+      const payload = { "ccontent": editText };
+      const option = {
+        method: 'PATCH',
+        headers: {
+          'accept': 'application/json', // 응답메세지 바디의 데이터포맷 타입
+          'Content-Type': 'application/json' // 요청 메세지 바디의 데이터포맷 타입
+        },
+        body: JSON.stringify(payload),   // ★js 객체 => json 포맷 문자열
+      };
+      try {
+        const res = await fetch(url, option);
+        if (!res.ok) return new Error('서버응답오류');
+        const result = await res.json(); // 응답 메세지 바디를 읽어 json포맷 문자열 => js객체
+        if (result.header.rtcd == '00') {
+          console.log(result.body);
+
+          // const $originalLi = $readMode2.content.cloneNode(true).querySelector('li'); // 되돌릴 Li
+          // const $editLi = res.target.closest('li');
+          // $editLi.replaceWith($originalLi);
+          list(bId);
+
+        } else {
+          new Error('수정 실패!');
+        }
+        console.log(result);
+      } catch (err) {
+        console.err(err.message);
+      }
+    }
+
+    // 댓글 취소 함수 ♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠♠
+    function cancel(evt) {
+      const $originalLi = $readMode2.content.cloneNode(true).querySelector('li'); // 되돌릴 Li
+      const $currentLi = evt.target.closest('li'); // 수정모드 된 Li
+
+      // 이전값 사용자 정의속성으로 저장했던거 되돌릴 Li.textContet에 저장
+      $originalLi.querySelector('.reply').textContent = $currentLi.querySelector('.text').dataset.oldText;
+
+      $currentLi.replaceWith($originalLi);
+    }
+
+
+    /* ---------- 모달창 ---------------------------------------------*/
+    const $delModal = document.getElementById('delModal');    //삭제 모달창
+    const $cancelBtn = document.getElementById('cancelBtn');   //취소버튼 모달창
+    const $delItemBtn = document.getElementById('delItemBtn'); //삭제버튼 모달창
+
+    $delModal.addEventListener('close', evt => {
+      if ($delModal.returnValue == 'ok') {
+        del(window.commentsId.value); // 댓글 삭제 함수 실행
+      }
+    });
+
+    // 취소버튼 모달창
+    $cancelBtn.addEventListener('click', evt => {
+      $delModal.close('cancel');
+    });
+
+    // 삭제버튼 모달창
+    $delItemBtn.addEventListener('click', evt => {
+      $delModal.close('ok');
+    });
 
   </script>
 
