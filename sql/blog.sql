@@ -97,7 +97,7 @@ select c.comments_id, c.blog_id, c.ccontent, c.writer, c.cdate, c.udate
   from comments c join blog b on c.blog_id = b.blog_id
   where c.blog_id = 1
   order by comments_id desc
-  offset (:recCnt-1) * :reqPage rows
+  offset (:reqPage-1) * :recCnt rows
   fetch first :recCnt rows only;
 
 select count(*) from comments;
@@ -123,6 +123,12 @@ delete from comments
 select blog_id, title, bcontent, writer, cdate, udate
   from blog
   order by blog_id desc;
+--목록(페이징)
+select blog_id, title, bcontent, writer, cdate, udate
+  from blog
+  order by blog_id desc
+  offset (:reqPage-1) * :recCnt rows
+  fetch first :recCnt rows only;
 
 select count(*) from blog;
 
