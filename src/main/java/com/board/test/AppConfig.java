@@ -19,7 +19,8 @@ public class AppConfig implements WebMvcConfigurer {
                     "/logout",
                     "/members/join",
                     "/css/**", "/js/**", "/img/**",
-                    "/test/**"
+                    "/test/**",
+                    "/api/members/**"
             );
   }
 }
