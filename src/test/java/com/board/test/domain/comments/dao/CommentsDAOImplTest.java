@@ -73,7 +73,6 @@ class CommentsDAOImplTest {
     Long id = 1L;
     Comments c = new Comments();
     c.setCcontent("호잇");
-    c.setWriter("뿌잇");
 
     int updateRowCnt = commentsDAO.updateById(id, c);
     log.info("updateRowCnt={}", updateRowCnt);
